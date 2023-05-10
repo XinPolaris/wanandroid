@@ -1,11 +1,12 @@
 package luyao.wanandroid.ui
 
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.google.android.material.composethemeadapter.MdcTheme
+import com.google.accompanist.themeadapter.material3.Mdc3Theme
 import dagger.hilt.android.AndroidEntryPoint
 import luyao.wanandroid.base.BaseVMActivity
 import luyao.wanandroid.navigation.WanandroidPage
@@ -26,18 +27,17 @@ class ComposeMainActivity : BaseVMActivity() {
         setContent {
 
             val systemUiController = rememberSystemUiController()
-            val useDarkIcons = MaterialTheme.colors.isLight
+            val useDarkIcons = !isSystemInDarkTheme()
 
-            SideEffect {
-                // Update all of the system bar colors to be transparent, and use
-                // dark icons if we're in light theme
+            DisposableEffect(systemUiController, useDarkIcons) {
                 systemUiController.setSystemBarsColor(
                     color = Color.White,
                     darkIcons = useDarkIcons
                 )
+                onDispose { }
             }
 
-            MdcTheme {
+            Mdc3Theme {
                 AppScreen()
             }
         }
@@ -64,15 +64,14 @@ fun AppScreen() {
         }
     } else {
         val systemUiController = rememberSystemUiController()
-        val useDarkIcons = MaterialTheme.colors.isLight
+        val useDarkIcons = !isSystemInDarkTheme()
 
-        SideEffect {
-            // Update all of the system bar colors to be transparent, and use
-            // dark icons if we're in light theme
+        DisposableEffect(systemUiController, useDarkIcons) {
             systemUiController.setSystemBarsColor(
                 color = colorPrimary,
                 darkIcons = useDarkIcons
             )
+            onDispose { }
         }
         WanandroidPage()
     }
